@@ -1,0 +1,415 @@
+---
+title: "財務分析ダッシュボード"
+output:
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    theme:
+      bootswatch: flatly
+    navbar:
+      - {title: "有価証券報告書", align: right}
+params:
+  pl_file:      "input_pl.csv"
+  bs_file:      "input_bs.csv"
+  summary_file: "input_summary.csv"
+  company_name: "ヒューマン・メタボローム・テクノロジーズ (6090)"
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(plotly)
+library(dplyr)
+library(DT)
+
+# ── CSV読み込み ───────────────────────────────────────
+pl      <- read.csv(params$pl_file,      fileEncoding = "UTF-8-BOM", check.names = FALSE)
+bs      <- read.csv(params$bs_file,      fileEncoding = "UTF-8-BOM", check.names = FALSE)
+summary5 <- read.csv(params$summary_file, fileEncoding = "UTF-8-BOM", check.names = FALSE)
+
+# ── 期名の取得（最後の2列を前期・当期とする）────────────────
+pl_periods  <- tail(colnames(pl)[colnames(pl) != "項目"], 2)
+bs_periods  <- tail(colnames(bs)[!colnames(bs) %in% c("区分","項目")], 2)
+period_prev <- pl_periods[1]   # 前期
+period_curr <- pl_periods[2]   # 当期
+
+# ── ヘルパー関数 ──────────────────────────────────────
+get_pl <- function(item) {
+  as.numeric(pl[pl$項目 == item, period_curr])
+}
+get_pl_prev <- function(item) {
+  as.numeric(pl[pl$項目 == item, period_prev])
+}
+get_bs <- function(item, period = period_curr) {
+  as.numeric(bs[bs$項目 == item, period])
+}
+fmt_oku <- function(x) paste0(round(x / 100000, 1), "億円")
+fmt_pct <- function(x) paste0(round(x, 1), "%")
+
+# ── KPI計算 ───────────────────────────────────────────
+rev_curr   <- get_pl("売上高")
+rev_prev   <- get_pl_prev("売上高")
+op_curr    <- get_pl("営業利益")
+ni_curr    <- get_pl("当期純利益")
+gp_curr    <- get_pl("売上総利益")
+
+asset_curr <- get_bs("資産合計")
+ca_curr    <- get_bs("流動資産合計")
+cl_curr    <- get_bs("流動負債合計")
+eq_curr    <- get_bs("純資産合計")
+liab_curr  <- get_bs("負債合計")
+
+roe_curr   <- tail(summary5$ROE, 1)
+equity_r   <- round(eq_curr / asset_curr * 100, 1)
+cur_ratio  <- round(ca_curr / cl_curr * 100, 1)
+
+# ── カラーパレット ────────────────────────────────────
+col_main    <- "#2c7bb6"
+col_sub     <- "#f77f00"
+col_neg     <- "#d73027"
+col_pos     <- "#1a9641"
+col_neutral <- "#999999"
+```
+
+```{r title_setup, include=FALSE}
+# タイトルにparams反映
+```
+
+---
+title: "`r paste('財務分析ダッシュボード｜', params$company_name)`"
+---
+
+業績サマリー
+=====================================
+
+Column {data-width=220}
+-------------------------------------
+
+### 当期売上高 {.value-box}
+```{r}
+valueBox(fmt_oku(rev_curr), icon = "fa-chart-line", color = col_main)
+```
+
+### 売上総利益率 {.value-box}
+```{r}
+valueBox(fmt_pct(gp_curr / rev_curr * 100), icon = "fa-percent", color = col_sub)
+```
+
+### 営業利益率 {.value-box}
+```{r}
+valueBox(fmt_pct(op_curr / rev_curr * 100), icon = "fa-percent", color = col_pos)
+```
+
+### 純利益率 {.value-box}
+```{r}
+valueBox(fmt_pct(ni_curr / rev_curr * 100), icon = "fa-percent", color = col_pos)
+```
+
+### 自己資本比率 {.value-box}
+```{r}
+valueBox(fmt_pct(equity_r), icon = "fa-shield", color = col_main)
+```
+
+### ROE {.value-box}
+```{r}
+valueBox(fmt_pct(roe_curr), icon = "fa-yen-sign", color = col_sub)
+```
+
+Column {data-width=500}
+-------------------------------------
+
+### 売上高・利益トレンド
+
+```{r}
+plot_ly(summary5, x = ~決算年月) %>%
+  add_bars(y = ~売上高, name = "売上高",
+           marker = list(color = col_main)) %>%
+  add_lines(y = ~経常利益, name = "経常利益",
+            line = list(color = col_sub, width = 3),
+            marker = list(size = 8)) %>%
+  add_lines(y = ~当期純利益, name = "当期純利益",
+            line = list(color = col_pos, width = 3),
+            marker = list(size = 8)) %>%
+  layout(
+    xaxis = list(title = ""),
+    yaxis = list(title = "千円", tickformat = ",d"),
+    legend = list(orientation = "h", y = -0.15),
+    hovermode = "x unified", margin = list(t = 30)
+  )
+```
+
+Column {data-width=280}
+-------------------------------------
+
+### ROE・自己資本比率トレンド
+
+```{r}
+plot_ly(summary5, x = ~決算年月) %>%
+  add_lines(y = ~ROE, name = "ROE (%)",
+            line = list(color = col_sub, width = 3), marker = list(size = 8)) %>%
+  add_lines(y = ~自己資本比率, name = "自己資本比率 (%)",
+            line = list(color = col_main, width = 3), marker = list(size = 8)) %>%
+  layout(
+    xaxis = list(title = ""),
+    yaxis = list(title = "%", range = c(0, 100)),
+    legend = list(orientation = "h", y = -0.15),
+    hovermode = "x unified", margin = list(t = 30)
+  )
+```
+
+### EPSトレンド
+
+```{r}
+plot_ly(summary5, x = ~決算年月, y = ~EPS, type = "bar",
+        marker = list(color = col_main)) %>%
+  layout(xaxis = list(title = ""), yaxis = list(title = "円"),
+         margin = list(t = 30))
+```
+
+
+損益計算書
+=====================================
+
+Column {data-width=420}
+-------------------------------------
+
+### 利益構造ウォーターフォール（当期）
+
+```{r}
+wf_labels <- c("売上高","売上原価","売上総利益","販管費","営業利益",
+               "営業外(純)","経常利益","特別損益(純)","純利益")
+wf_values <- c(
+  get_pl("売上高"),
+  -get_pl("売上原価"),
+  NA,
+  -get_pl("販売費及び一般管理費"),
+  NA,
+  get_pl("営業外収益合計") - get_pl("営業外費用合計"),
+  NA,
+  get_pl("特別利益合計") - get_pl("特別損失合計"),
+  NA
+)
+wf_measure <- c("absolute","relative","total","relative","total",
+                "relative","total","relative","total")
+
+plot_ly(x = wf_labels, y = wf_values,
+        type = "waterfall", measure = wf_measure,
+        connector = list(line = list(color = "#aaa")),
+        increasing = list(marker = list(color = col_pos)),
+        decreasing = list(marker = list(color = col_neg)),
+        totals     = list(marker = list(color = col_main))) %>%
+  layout(
+    xaxis = list(title = ""),
+    yaxis = list(title = "千円", tickformat = ",d"),
+    showlegend = FALSE, margin = list(t = 30)
+  )
+```
+
+Column {data-width=280}
+-------------------------------------
+
+### 利益率比較（前期→当期）
+
+```{r}
+labels <- c("売上総利益率","営業利益率","経常利益率","純利益率")
+items  <- c("売上総利益","営業利益","経常利益","当期純利益")
+prev_rates <- sapply(items, function(i) get_pl_prev(i) / rev_prev * 100)
+curr_rates <- sapply(items, function(i) get_pl(i)      / rev_curr * 100)
+
+rates <- data.frame(指標 = labels,
+                    前期 = prev_rates,
+                    当期 = curr_rates)
+
+plot_ly(rates, y = ~指標) %>%
+  add_bars(x = ~前期, name = period_prev, orientation = "h",
+           marker = list(color = col_neutral)) %>%
+  add_bars(x = ~当期, name = period_curr, orientation = "h",
+           marker = list(color = col_main)) %>%
+  layout(
+    barmode = "group",
+    xaxis = list(title = "%", ticksuffix = "%"),
+    yaxis = list(title = ""),
+    legend = list(orientation = "h", y = -0.15),
+    margin = list(t = 30)
+  )
+```
+
+### 費用構造（当期）
+
+```{r}
+plot_ly(
+  labels = c("売上原価","販管費","営業利益"),
+  values = c(get_pl("売上原価"),
+             get_pl("販売費及び一般管理費"),
+             get_pl("営業利益")),
+  type = "pie",
+  marker = list(colors = c(col_neg, col_neutral, col_pos)),
+  textinfo = "label+percent",
+  hole = 0.4
+) %>%
+  layout(showlegend = TRUE,
+         legend = list(orientation = "h", y = -0.1),
+         margin = list(t = 10))
+```
+
+Column {data-width=300}
+-------------------------------------
+
+### 損益計算書 詳細
+
+```{r}
+pl_disp <- pl %>%
+  mutate(
+    増減額 = .data[[period_curr]] - .data[[period_prev]],
+    増減率 = paste0(ifelse(増減額 >= 0, "＋", ""),
+                   round(増減額 / abs(.data[[period_prev]]) * 100, 1), "%")
+  ) %>%
+  mutate(across(c(all_of(period_prev), all_of(period_curr), 増減額),
+                ~format(., big.mark = ",")))
+
+datatable(
+  pl_disp,
+  colnames = c("項目", paste0(period_prev,"（千円）"),
+               paste0(period_curr,"（千円）"), "増減額", "増減率"),
+  rownames = FALSE,
+  options = list(pageLength = 15, dom = "t", ordering = FALSE),
+  class = "compact stripe"
+)
+```
+
+
+貸借対照表
+=====================================
+
+Column {data-width=350}
+-------------------------------------
+
+### 資産構成の変化
+
+```{r}
+asset_items <- c("現金及び預金","売掛金","その他流動資産",
+                 "有形固定資産","無形固定資産","投資その他の資産")
+bs_asset <- bs %>%
+  filter(区分 == "資産", 項目 %in% asset_items) %>%
+  mutate(項目 = factor(項目, levels = asset_items))
+
+asset_long <- bind_rows(
+  bs_asset %>% mutate(期 = period_prev, 金額 = .data[[period_prev]]),
+  bs_asset %>% mutate(期 = period_curr, 金額 = .data[[period_curr]])
+) %>% select(期, 項目, 金額)
+
+plot_ly(asset_long, x = ~期, y = ~金額, color = ~項目,
+        type = "bar",
+        colors = c("#2166ac","#4393c3","#92c5de","#f4a582","#d6604d","#b2182b")) %>%
+  layout(
+    barmode = "stack",
+    xaxis = list(title = ""),
+    yaxis = list(title = "千円", tickformat = ",d"),
+    legend = list(orientation = "h", y = -0.2),
+    margin = list(t = 30)
+  )
+```
+
+### 負債・純資産構成の変化
+
+```{r}
+liab_items <- c("流動負債合計","固定負債合計","株主資本合計","新株予約権")
+bs_liab <- bs %>%
+  filter(項目 %in% liab_items) %>%
+  mutate(項目 = factor(項目, levels = liab_items))
+
+liab_long <- bind_rows(
+  bs_liab %>% mutate(期 = period_prev, 金額 = .data[[period_prev]]),
+  bs_liab %>% mutate(期 = period_curr, 金額 = .data[[period_curr]])
+) %>% select(期, 項目, 金額) %>% filter(金額 > 0)
+
+plot_ly(liab_long, x = ~期, y = ~金額, color = ~項目,
+        type = "bar",
+        colors = c("#d73027","#fc8d59","#1a9641","#fdae61")) %>%
+  layout(
+    barmode = "stack",
+    xaxis = list(title = ""),
+    yaxis = list(title = "千円", tickformat = ",d"),
+    legend = list(orientation = "h", y = -0.2),
+    margin = list(t = 30)
+  )
+```
+
+Column {data-width=250}
+-------------------------------------
+
+### 財務健全性指標
+
+```{r}
+ratios <- data.frame(
+  指標      = c("流動比率","自己資本比率","負債比率","ROA","ROE"),
+  前期 = c(
+    round(get_bs("流動資産合計", period_prev) / get_bs("流動負債合計", period_prev) * 100, 1),
+    round(get_bs("純資産合計",   period_prev) / get_bs("資産合計",     period_prev) * 100, 1),
+    round(get_bs("負債合計",     period_prev) / get_bs("純資産合計",   period_prev) * 100, 1),
+    round(get_pl_prev("当期純利益")           / get_bs("資産合計",     period_prev) * 100, 1),
+    summary5$ROE[nrow(summary5) - 1]
+  ),
+  当期 = c(
+    round(ca_curr / cl_curr * 100, 1),
+    round(eq_curr / asset_curr * 100, 1),
+    round(liab_curr / eq_curr * 100, 1),
+    round(ni_curr / asset_curr * 100, 1),
+    roe_curr
+  )
+)
+
+plot_ly(ratios, y = ~指標) %>%
+  add_bars(x = ~前期, name = period_prev, orientation = "h",
+           marker = list(color = col_neutral)) %>%
+  add_bars(x = ~当期, name = period_curr, orientation = "h",
+           marker = list(color = col_main)) %>%
+  layout(
+    barmode = "group",
+    xaxis = list(title = "%"),
+    legend = list(orientation = "h", y = -0.15),
+    margin = list(t = 30)
+  )
+```
+
+### 総資産・純資産トレンド
+
+```{r}
+plot_ly(summary5, x = ~決算年月) %>%
+  add_bars(y = ~総資産, name = "総資産",
+           marker = list(color = "#aec7e8")) %>%
+  add_bars(y = ~純資産, name = "純資産",
+           marker = list(color = col_main)) %>%
+  layout(
+    barmode = "overlay",
+    xaxis = list(title = ""),
+    yaxis = list(title = "千円", tickformat = ",d"),
+    legend = list(orientation = "h", y = -0.15),
+    margin = list(t = 30)
+  )
+```
+
+Column {data-width=400}
+-------------------------------------
+
+### 貸借対照表 詳細
+
+```{r}
+bs_disp <- bs %>%
+  mutate(
+    増減額 = .data[[period_curr]] - .data[[period_prev]],
+    前期_表示 = format(.data[[period_prev]], big.mark = ","),
+    当期_表示 = format(.data[[period_curr]], big.mark = ","),
+    増減_表示 = paste0(ifelse(増減額 >= 0, "＋", ""),
+                      format(増減額, big.mark = ","))
+  ) %>%
+  select(区分, 項目, 前期_表示, 当期_表示, 増減_表示)
+
+datatable(
+  bs_disp,
+  colnames = c("区分", "項目", paste0(period_prev,"（千円）"),
+               paste0(period_curr,"（千円）"), "増減額"),
+  rownames = FALSE,
+  options = list(pageLength = 25, dom = "t", ordering = FALSE),
+  class = "compact stripe"
+)
+```

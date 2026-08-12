@@ -1,0 +1,15 @@
+Package: bidash
+Title: Financial Statement Dashboard Generator
+Version: 0.1.0
+Authors@R: person("User", role = c("aut", "cre"), email = "user@example.com")
+Description: 損益計算書・貸借対照表のCSVを読み込み、インタラクティブなHTMLダッシュボードを生成します。
+License: MIT + file LICENSE
+Encoding: UTF-8
+Imports:
+    rmarkdown,
+    flexdashboard,
+    plotly,
+    dplyr,
+    DT,
+    pandoc
+RoxygenNote: 7.3.2

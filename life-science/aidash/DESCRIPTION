@@ -1,0 +1,20 @@
+Package: aidash
+Title: AI-Powered Financial Statement Dashboard Generator
+Version: 0.1.0
+Authors@R: person("User", role = c("aut", "cre"), email = "user@example.com")
+Description: bidash の拡張パッケージ。損益計算書・貸借対照表のCSVを読み込み、
+    Hugging Face Inference API による生成AIコメントを付加した
+    インタラクティブなHTMLダッシュボードを生成します。
+License: MIT + file LICENSE
+Encoding: UTF-8
+Imports:
+    httr,
+    jsonlite,
+    htmltools,
+    rmarkdown,
+    flexdashboard,
+    plotly,
+    dplyr,
+    DT,
+    pandoc
+RoxygenNote: 7.3.2
