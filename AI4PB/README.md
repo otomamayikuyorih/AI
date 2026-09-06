@@ -105,3 +105,10 @@ UI 上のクイックボタンや自由入力から以下の調査を試すこ�
 4. **高度な学術比較**:
    - *「AI4PBの2025年以降の主要研究テーマを1つ選んで、代表論文、研究目的、実験デザイン、主要結果、限界を比較してください。」*
    - → Vertex AI (Gemini 2.5 Flash) が自律的に論文を選定し、指定された全観点を網羅した学術レポートを執筆。
+
+---
+
+## 📜 免責事項 (Disclaimer)
+
+> *This project is an independent research tool developed for the Google Cloud Agentic AI Hackathon and is not affiliated with, endorsed by, or sponsored by Stanford University or the AI for Public Benefit Lab.*
+

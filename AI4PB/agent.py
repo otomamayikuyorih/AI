@@ -285,7 +285,7 @@ class AI4PBResearchAgent:
 """
         final_report = self._call_llm(
             synthesis_prompt,
-            system_instruction="あなたは Stanford AI4PB Lab の公式リサーチエージェントです。論文本文を精密に読んだ上で事実に基づいた価値ある学術レポートを作成してください。"
+            system_instruction="あなたは Stanford AI4PB Lab の公開研究を対象とする独立した学術リサーチエージェントです。論文本文を精密に読んだ上で事実に基づいた価値ある学術レポートを作成してください。"
         )
 
         if not final_report:

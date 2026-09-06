@@ -88,7 +88,7 @@ with st.sidebar:
 # Main Header
 st.markdown('<div class="main-title">🎓 Stanford AI4PB Research Agent</div>', unsafe_allow_html=True)
 st.markdown(
-    '<div class="subtitle">Stanford大学 <b>AI for Public Benefit Lab (AI4PB)</b> の研究成果・論文・再現実験を自律調査する AI Agent です。</div>',
+    '<div class="subtitle">Stanford大学 <b>AI for Public Benefit Lab (AI4PB)</b> の公開研究成果・論文・再現実験を自律調査する独立した学術 AI Agent です。</div>',
     unsafe_allow_html=True
 )
 
@@ -111,7 +111,7 @@ if col2.button("📑 2. 最新研究テーマの整理", use_container_width=Tru
     st.session_state["query_text"] = "AI4PB の最近の研究テーマと成果を整理して"
     run_triggered = True
 
-if col3.button("🧪 3. 再現実験のしやすい研究", use_container_width=True):
+if col3.button("🛠️ 3. 再現実験のしやすさ比較", use_container_width=True):
     st.session_state["query_text"] = "自分で再現実験するなら、どの研究が取り組みやすい？"
     run_triggered = True
 
@@ -126,6 +126,8 @@ user_input = st.text_area(
 if st.button("🚀 自律リサーチを開始する", type="primary", use_container_width=True):
     st.session_state["query_text"] = user_input
     run_triggered = True
+
+st.caption("🔒 ※ ご入力内容およびエージェントの自律実行ログは、デモ改善および分析のため Google Cloud BigQuery に記録されます。")
 
 # Execution
 if run_triggered:
