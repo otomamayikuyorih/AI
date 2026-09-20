@@ -4,8 +4,8 @@ html {
 }
 
 body {
-	color: #eeeae0;
-	background-color: #30383d;
+	color: #222222;
+	background-color: #ffffff;
 	margin: 40px 5%;
 	font-family: Verdana, Arial, sans-serif;
 	font-size: 11pt;
@@ -14,38 +14,66 @@ body {
 
 a:link,
 a:visited {
-	color: #d6bb78;
+	color: #315f82;
 	text-decoration: none;
 }
 
 a:hover,
 a:focus {
-	color: #f0d99a;
+	color: #163f5d;
 	text-decoration: underline;
 }
 
 h3 {
 	width: 600px;
 	max-width: 100%;
+	margin-top: 42px;
 	padding-bottom: 3px;
-	border-bottom: 1px solid #7d8586;
+	border-bottom: 1px solid #b8bfc2;
 	font-size: 12pt;
 	font-weight: bold;
 }
 
-h1 {
-	width: 760px;
-	max-width: 100%;
-	padding-bottom: 5px;
-	border-bottom: 1px solid #7d8586;
-	font-size: 16pt;
-	line-height: 1.4;
+h4 {
+	margin: 24px 0 10px;
+	font-size: 11pt;
+}
+
+.apps {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 28px 32px;
+	max-width: 1000px;
+}
+
+.app {
+	min-width: 0;
+}
+
+.screenshot {
+	display: block;
+	width: 100%;
+	height: auto;
+	border: 1px solid #b8bfc2;
+}
+
+.app-copy {
+	max-width: 850px;
+}
+
+.meta,
+.note,
+.footer {
+	color: #666666;
+	font-size: 10pt;
+}
+
+code {
+	color: #222222;
 }
 
 .footer {
 	margin-top: 40px;
-	color: #c1c3bd;
-	font-size: 10pt;
 }
 
 @media (max-width: 600px) {
@@ -60,7 +88,20 @@ h1 {
 		font-size: 17px;
 	}
 
+	h4 {
+		font-size: 16px;
+	}
+
 	ul {
 		padding-left: 24px;
+	}
+
+	.app {
+		margin-bottom: 0;
+	}
+
+	.apps {
+		grid-template-columns: 1fr;
+		gap: 38px;
 	}
 }

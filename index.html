@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Agentic AI Hackathon with Google Cloud、BI/AIダッシュボード、資格取得を中心としたAI活動のポートフォリオです。">
+<meta name="description" content="公開生命科学データとAIを活用した、研究者向けWebアプリケーションの開発記録です。">
 <title>AI活動記録</title>
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -11,31 +11,70 @@
 
 <p>AI活動記録 / <a href="https://hiroyukiyamamoto.github.io/sikajiro/">メタボロミクスのためのデータサイエンス研究</a> / <a href="https://otomamayikuyorih.github.io/kametaro/">データサイエンス研究・教育</a> /</p>
 
-<p>ライフサイエンス業界でのAI導入・活用の仕事をしています。<BR>
-AIハッカソンへの参加、BI/AIダッシュボード、資格取得の3つをテーマに、学習・実装・調査の記録を蓄積しています。</p>
+<p>Google CloudとAIエージェントを活用して、生命科学分野の公開データを整理し、研究者が検索・比較・活用できるWebアプリケーションを開発しています。<br>
+ここでは、現在開発しているアプリケーションと関連プロジェクトを紹介します。</p>
 
-<h3>AIハッカソン</h3>
+<h3>生命科学AI Webアプリケーション</h3>
+
+<div class="apps">
+<div class="app">
+<h4>Cross-Omics Contrast DB</h4>
+<img class="screenshot" src="assets/cross-omics-contrast-db.svg" alt="Cross-Omics Contrast DBで疾患や介入ごとに腸内細菌叢研究とメタボローム研究を接続した画面">
+<div class="app-copy">
+<p><strong>腸内細菌叢とメタボロームの公開研究を、比較条件（contrast）という共通単位でつなぐ探索基盤。</strong></p>
+<p>疾患、介入、時点、試料などを整理し、「同じ問いを扱う研究」をオミクス横断で発見できるようにします。研究単位ではなく比較単位で接続することで、統合解析候補の探索を現実的にします。</p>
+<p class="meta">Microbiome / Metabolomics / Metadata harmonization / Study matching</p>
+</div>
+</div>
+
+<div class="app">
+<h4>Metabolite Set Database</h4>
+<img class="screenshot" src="assets/metabolite-set-database.svg" alt="mseapca Metabolite Set Databaseで5,046件の代謝物セットを一覧・検索する画面">
+<div class="app-copy">
+<p><strong>分散する代謝物セットを、検索・比較・エクスポートできる一つの基盤へ。</strong></p>
+<p>KEGG、Reactome、PathBank、WikiPathwaysなど複数の公開資源から5,046セットを整理。名称やIDによる検索に加え、生成AIを利用した意味検索とRパッケージ <code>mseapca</code> への接続を想定しています。</p>
+<p class="meta">5,046 sets / Semantic search / R integration</p>
+</div>
+</div>
+
+<div class="app">
+<h4>Cytokine Signature Search</h4>
+<img class="screenshot" src="assets/cytokine-signature-search.svg" alt="Cytokine Signature Searchで入力した炎症マーカーパターンに似た公開研究を表示した画面">
+<div class="app-copy">
+<p><strong>UP / DOWNしたサイトカインの組み合わせから、似た免疫応答を示す公開研究を探す。</strong></p>
+<p>ImmPortのヒト免疫研究を比較可能なシグネチャへ変換。同方向・逆方向の一致、測定背景、研究情報を一画面で確認し、疾患・感染・ワクチン研究との接点を探索できます。</p>
+<p class="meta">ImmPort / Signature matching / Evidence explorer</p>
+</div>
+</div>
+
+<div class="app">
+<h4>MetaboLoadings</h4>
+<img class="screenshot" src="assets/metaboloadings.svg" alt="MetaboLoadingsでメタボロミクスデータの前処理と解析を進める画面">
+<div class="app-copy">
+<p><strong>PCA・PLS-SVDとパスウェイ解析を、一つの画面で進めるメタボロミクス解析アプリ。</strong></p>
+<p>データのアップロードと前処理から、PCA、PLS-SVD、ローディングの仮説検定、Pathway MSEAまでを段階的に実行できます。Rパッケージ <code>loadings</code> と <code>mseapca</code> の機能を、研究者が画面操作で利用できる形にまとめています。</p>
+<p class="meta">R Shiny / PCA / PLS-SVD / loadings / mseapca</p>
+</div>
+</div>
+
+ </div>
+
+<p class="note">クラウド費用を安全に管理するため、常時公開URLではなく実装画面とコンセプトを掲載しています。</p>
+
+<h3>関連プロジェクト</h3>
 
 <ul>
-<li>Agentic AI Hackathon with Google Cloudへの参加</li>
 <li>AI4PB Research Agent
-	<ul>
-	<li>Stanford AI for Public Benefit Lab (AI4PB) の公開研究を対象に、<BR>
-		論文検索、本文取得、情報ギャップ評価、再現実験ガイドの提示を自律的に行う研究調査エージェントです。</li>
-	<li>Google Cloud の Vertex AI（Gemini 2.5 Flash）、Cloud Run、BigQuery を活用して実装しています。</li>
-	<li><a href="https://ai4pb-research-agent-121643671058.us-central1.run.app/">Live Demo</a> / <a href="https://github.com/otomamayikuyorih/AI/tree/main/AI4PB">GitHubリポジトリ</a></li>
-	</ul>
+  <ul>
+  <li>論文検索、本文取得、情報ギャップ評価、再現実験ガイドを支援する研究調査エージェントです。</li>
+  <li><a href="https://github.com/otomamayikuyorih/AI/tree/main/AI4PB">GitHubリポジトリ</a></li>
+  </ul>
 </li>
-</ul>
-
-<h3>BI/AIダッシュボード</h3>
-
-<ul>
-<li>ライフサイエンス企業・業界調査
-	<ul>
-	<li>事業構造、研究開発、AI / DX戦略、公開データを比較・可視化します。</li>
-	<li><a href="https://github.com/otomamayikuyorih/AI/tree/main/life-science/bidash">BIダッシュボード</a> / <a href="https://github.com/otomamayikuyorih/AI/tree/main/life-science/aidash">AIダッシュボード</a></li>
-	</ul>
+<li>Life Science BI / AI Dashboards
+  <ul>
+  <li>ライフサイエンス企業の事業構造、研究開発、AI / DX戦略、公開情報を比較・可視化します。</li>
+  <li><a href="https://github.com/otomamayikuyorih/AI/tree/main/life-science/bidash">BIダッシュボード</a> / <a href="https://github.com/otomamayikuyorih/AI/tree/main/life-science/aidash">AIダッシュボード</a></li>
+  </ul>
 </li>
 </ul>
 
@@ -44,12 +83,14 @@ AIハッカソンへの参加、BI/AIダッシュボード、資格取得の3つ
 <ul>
 <li>AI、Google Cloud、IT、情報セキュリティ、マネジメントに関する資格を段階的に取得することを目指しています。</li>
 <li>当面の目標
-	<ul>
-	<li>2026：Generative AI Leader / Cloud Digital Leader</li>
-	<li>2027–2028：Associate Cloud Engineer / ITコーディネータ試験 / 情報セキュリティマネジメント試験</li>
-	</ul>
+  <ul>
+  <li>2026：Generative AI Leader / Cloud Digital Leader</li>
+  <li>2027–2028：Associate Cloud Engineer / ITコーディネータ試験 / 情報セキュリティマネジメント試験</li>
+  </ul>
 </li>
 </ul>
+
+<p class="footer"><a href="https://github.com/otomamayikuyorih/AI">GitHub</a></p>
 
 </body>
 </html>
