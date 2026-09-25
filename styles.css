@@ -9,7 +9,11 @@ body {
 	margin: 40px 5%;
 	font-family: Verdana, Arial, sans-serif;
 	font-size: 11pt;
-	line-height: 1.5;
+	line-height: 1.4;
+}
+
+p {
+	margin: 0.7em 0;
 }
 
 a:link,
@@ -27,7 +31,7 @@ a:focus {
 h3 {
 	width: 600px;
 	max-width: 100%;
-	margin-top: 42px;
+	margin-top: 34px;
 	padding-bottom: 3px;
 	border-bottom: 1px solid #b8bfc2;
 	font-size: 12pt;
@@ -35,19 +39,23 @@ h3 {
 }
 
 h4 {
-	margin: 24px 0 10px;
+	margin: 20px 0 8px;
 	font-size: 11pt;
 }
 
 .apps {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 28px 32px;
+	gap: 20px 28px;
 	max-width: 1000px;
 }
 
 .app {
 	min-width: 0;
+}
+
+.app h4 {
+	margin-top: 0;
 }
 
 .screenshot {
@@ -80,11 +88,11 @@ code {
 	body {
 		margin: 24px 20px;
 		font-size: 16px;
-		line-height: 1.8;
+		line-height: 1.6;
 	}
 
 	h3 {
-		margin-top: 32px;
+		margin-top: 28px;
 		font-size: 17px;
 	}
 
@@ -102,6 +110,6 @@ code {
 
 	.apps {
 		grid-template-columns: 1fr;
-		gap: 38px;
+		gap: 28px;
 	}
 }
